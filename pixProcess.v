@@ -15,7 +15,9 @@ module pixProc(reset, clk,
    
 
    // Removing THREE LSBs
-   parameter MASK = 6'b111000;
+   parameter R_MASK = 6'b110000;
+   parameter G_MASK = 6'b111000;
+   parameter B_MASK = 6'b110000;
 
    // We want to clock our processing
    reg [35:0] 	 two_proc_pixs;
@@ -24,7 +26,7 @@ module pixProc(reset, clk,
    // Simply RGB Thresholding
    always @(posedge clk)
      begin
-	two_proc_pixs <= two_pixel_vals & {MASK, MASK, MASK,MASK, MASK, MASK};
+	two_proc_pixs <= two_pixel_vals & {R_MASK, G_MASK, B_MASK,R_MASK, G_MASK, B_MASK};
 	proc_pix_addr <= write_addr;
      end
    
