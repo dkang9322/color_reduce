@@ -544,13 +544,27 @@ module zbt_6111_sample(beep, audio_reset_b,
    readPix pixFromZBT0(reset, clk, hcount, vcount, zbt0_two_pixels,
 		       vram_read_data, zbt1_write_addr);
 
+   // Process Pixels
+   wire [35:0] 	zbt1_proc_pixels;
+   wire [18:0] 	zbt1_dwrite_addr; //appropriately delayed address
    
+   pixProc procPixToZBT1(reset, clk, hcount, vcount, zbt0_two_pixels,
+			 zbt1_write_addr, zbt1_proc_pixels,
+			 zbt1_dwrite_addr);
+
+   /* Storing Processed Pixel Value to ZBT bank 1 */
+   assign vram_addr1 = my_we1 ? zbt1_dwrite_addr : vram_vga_addr;
+   assign vram_we1 = my_we1;
+   assign vram_write_data1 = zbt1_proc_pixels;
+   
+   
+   /* Simply storing data from ZBT bank 0 to ZBT bank 1 */
+   /* 
    // Store what I read from ZBT bank 0 to ZBT bank 1
-  
    assign vram_addr1 = my_we1 ? zbt1_write_addr : vram_vga_addr;
    assign vram_we1 = my_we1;
    assign vram_write_data1 = zbt0_two_pixels;
-
+    */
    //To use Color Inversion, uncomment the following line
    //assign vram_write_data1 = ~write_data;
 
