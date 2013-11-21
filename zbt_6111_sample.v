@@ -474,8 +474,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    //Need to expand definintion of vram_display
    vram_display vd1(reset,clk,hcount,vcount,vr_pixel,
 		    vram_vga_addr,vram_read_data, 
-		    //vram_read_data1,
-		    36'd0,
+		    vram_read_data1,
 		    switch[2]);
 
    // ADV7185 NTSC decoder interface code
@@ -545,7 +544,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    readPix pixFromZBT0(reset, clk, hcount, vcount, zbt0_two_pixels,
 		       vram_read_data, zbt1_write_addr);
 
-   /*
+   
    // Store what I read from ZBT bank 0 to ZBT bank 1
   
    assign vram_addr1 = my_we1 ? zbt1_write_addr : vram_vga_addr;
@@ -554,7 +553,6 @@ module zbt_6111_sample(beep, audio_reset_b,
 
    //To use Color Inversion, uncomment the following line
    //assign vram_write_data1 = ~write_data;
-   */
 
    // select output pixel data
 
