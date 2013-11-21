@@ -542,7 +542,7 @@ module zbt_6111_sample(beep, audio_reset_b,
 		       vram_read_data, zbt1_write_addr);
    
    // 10 cycle delayed
-   parameter DEL = 2;
+   parameter DEL = 50;
    parameter ADD_DEL = 19 * DEL - 1;
    parameter DATA_DEL = 36 * DEL - 1;
    parameter WE_DEL = 1* DEL - 1;
