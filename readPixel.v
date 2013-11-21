@@ -22,22 +22,22 @@ module readPix(reset, clk,
    // Change of address scheme to compensate for reading color
    assign vram_addr = {vcount_f, hcount_f[9:1]};
 
-   /* No Compensation Needed, as we are writing to ZBT bank 1
-      Just need to make sure to delay the addresses and write enable
-      appropriately*/
-   /*
-   // Address to write is a two_cycle delayed version of vram_addr,
-   // compensates for ZBT 2 clock cycle read delay
+
+   // Unlike naive initial thought that no data needs to be latched,
+   // maybe latching data helps
+   wire       hc2 = hcount[0];
+   reg [35:0] vr_data_latched;
+   reg [35:0] last_vr_data;
+
    always @(posedge clk)
-     begin
-	delayed_one <= vram_addr;
-	write_addr1 <= delayed_one;
-     end
-    */
-   
+     last_vr_data <= (hc2 == 1'd1) ? vr_data_latched : last_vr_data;
+
+   always @(posedge clk)
+     vr_data_latched <= (hc2 ==1'd0) ? vram_read_data : vr_data_latched;
+
    // Address to write to ZBT bank 1 is the same address
    wire [18:0] write_addr1 = vram_addr;
-   wire [35:0] two_pixel_data = vram_read_data;
+   wire [35:0] two_pixel_data = last_vr_data;
 
 endmodule // readPix
 
