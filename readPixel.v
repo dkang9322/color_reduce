@@ -30,10 +30,10 @@ module readPix(reset, clk,
    reg [35:0] last_vr_data;
 
    always @(posedge clk)
-     last_vr_data <= (hc2 == 1'd1) ? vr_data_latched : last_vr_data;
+     last_vr_data <= (hc2 == 1'd0) ? vr_data_latched : last_vr_data;
 
    always @(posedge clk)
-     vr_data_latched <= (hc2 ==1'd0) ? vram_read_data : vr_data_latched;
+     vr_data_latched <= (hc2 ==1'd1) ? vram_read_data : vr_data_latched;
 
    // Address to write to ZBT bank 1 is the same address
    wire [18:0] write_addr1 = vram_addr;

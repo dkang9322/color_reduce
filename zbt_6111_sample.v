@@ -533,7 +533,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    //ZBT bank 1 we/write data
    //Note we are using the same write_addr/write_data as ZBT bank 0
    //Supervisor needs to generate the appropriate write_addr and appropriate delay
-   wire 	my_we1 = switch[3] ? sw_ntsc ? (hcount[0]==1'd1) : blank : 0;
+   wire 	my_we1 = switch[3] ? sw_ntsc ? (hcount[0]==1'd0) : blank : 0;
 
    // Pixel Reader
    wire [35:0] 	zbt0_two_pixels;
