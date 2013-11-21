@@ -518,7 +518,8 @@ module zbt_6111_sample(beep, audio_reset_b,
 
    // ZBT bank 0 we/write data
    // Adding condition to we such that check for swtich[3]
-   wire 	my_we = !switch[3] ? sw_ntsc ? (hcount[0]==1'd1) : blank : 0;
+   // For processing, we write to ZBT bank 1, always
+   wire 	my_we = sw_ntsc ? (hcount[0]==1'd1) : blank;
    wire [18:0] 	write_addr = sw_ntsc ? ntsc_addr : vram_pat_addr;
    wire [35:0] 	write_data = sw_ntsc ? ntsc_data : vpat;
 
@@ -536,40 +537,18 @@ module zbt_6111_sample(beep, audio_reset_b,
 
    // Pixel Reader
    wire [35:0] 	zbt0_two_pixels;
+   // Note zbt1_write_addr = vram_vga_addr
    wire [18:0] 	zbt1_write_addr; // This will be appropriately delayed
    
    readPix pixFromZBT0(reset, clk, hcount, vcount, zbt0_two_pixels,
 		       vram_read_data, zbt1_write_addr);
 
-   /* Assume No Delay */
-   
-   // 10 cycle delayed
-   parameter DEL = 20;
-   parameter ADD_DEL = 19 * DEL - 1;
-   parameter DATA_DEL = 36 * DEL - 1;
-   parameter WE_DEL = 1* DEL - 1;
-   
-   reg [ADD_DEL:0] 	write_addr1;
-   reg [DATA_DEL:0] 	write_data1;
-   //reg [WE_DEL:0] 	we_1;
-   
-   
-   
-   // Let's have write_addr1 to be a delayed version of zbt1_write_addr
-   // This is changing way too fast, if we're delaying by even number of cycles
-   // We don't need to worry of write_enable
-   always @(posedge hcount[0])
-     begin
-	write_addr1 <= {write_addr1[ADD_DEL-19:0], zbt1_write_addr};
-	write_data1 <= {write_data1[DATA_DEL-36:0], zbt0_two_pixels};
-	//we_1 <= {we_1[WE_DEL-1:0], my_we1};
-     end
 
-   
-   assign vram_addr1 = my_we1 ? write_addr1[ADD_DEL:ADD_DEL-18] : vram_vga_addr;
-   //assign vram_we1 = we_1[WE_DEL];
+   // Store what I read from ZBT bank 0 to ZBT bank 1
+  
+   assign vram_addr1 = my_we1 ? zbt1_write_addr : vram_vga_addr;
    assign vram_we1 = my_we1;
-   assign vram_write_data1 = write_data1[DATA_DEL:DATA_DEL-35];
+   assign vram_write_data1 = zbt0_two_pixels;
 
    //To use Color Inversion, uncomment the following line
    //assign vram_write_data1 = ~write_data;
@@ -905,3 +884,36 @@ module ramclock(ref_clock, fpga_clock, ram0_clock, ram1_clock,
 endmodule
 
 
+/* Delay Introduced */
+/*
+   // 10 cycle delayed
+   parameter DEL = 20;
+   parameter ADD_DEL = 19 * DEL - 1;
+   parameter DATA_DEL = 36 * DEL - 1;
+   parameter WE_DEL = 1* DEL - 1;
+   
+   reg [ADD_DEL:0]         write_addr1;
+   reg [DATA_DEL:0]         write_data1;
+   //reg [WE_DEL:0]         we_1;
+   
+   
+   
+   // Let's have write_addr1 to be a delayed version of zbt1_write_addr
+   // This is changing way too fast, if we're delaying by even number of cycles
+   // We don't need to worry of write_enable
+   always @(posedge hcount[0])
+     begin
+        write_addr1 <= {write_addr1[ADD_DEL-19:0], zbt1_write_addr};
+        write_data1 <= {write_data1[DATA_DEL-36:0], zbt0_two_pixels};
+        //we_1 <= {we_1[WE_DEL-1:0], my_we1};
+     end
+ */
+
+/* Just a comment */
+/* Previously on the two_zbt project, we could choose
+    to write to ZBT bank 0 XOR ZBT bank 1, via switch[3]
+    But for processing, we write to ZBT bank 0 ntsc_data
+    regardless of our choice of switch[3].
+
+    otherwise ZBT bank 1 will get no new frames (hence the stillness)
+ */
