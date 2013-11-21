@@ -540,9 +540,11 @@ module zbt_6111_sample(beep, audio_reset_b,
    
    readPix pixFromZBT0(reset, clk, hcount, vcount, zbt0_two_pixels,
 		       vram_read_data, zbt1_write_addr);
+
+   /* Assume No Delay */
    
    // 10 cycle delayed
-   parameter DEL = 50;
+   parameter DEL = 20;
    parameter ADD_DEL = 19 * DEL - 1;
    parameter DATA_DEL = 36 * DEL - 1;
    parameter WE_DEL = 1* DEL - 1;
@@ -562,10 +564,11 @@ module zbt_6111_sample(beep, audio_reset_b,
 	write_data1 <= {write_data1[DATA_DEL-36:0], zbt0_two_pixels};
 	//we_1 <= {we_1[WE_DEL-1:0], my_we1};
      end
+
    
-   assign vram_addr1 = my_we ? write_addr1[ADD_DEL:ADD_DEL-18] : vram_vga_addr;
+   assign vram_addr1 = my_we1 ? write_addr1[ADD_DEL:ADD_DEL-18] : vram_vga_addr;
    //assign vram_we1 = we_1[WE_DEL];
-   assign vram_we1 = my_we;
+   assign vram_we1 = my_we1;
    assign vram_write_data1 = write_data1[DATA_DEL:DATA_DEL-35];
 
    //To use Color Inversion, uncomment the following line
