@@ -537,7 +537,6 @@ module zbt_6111_sample(beep, audio_reset_b,
    //Supervisor needs to generate the appropriate write_addr and appropriate delay
    wire 	my_we1 = switch[3] ? sw_ntsc ? (hcount[0]==1'd1) : blank : 0;
 
-   /*
    // Pixel Reader
    wire [35:0] 	zbt0_two_pixels;
    // Note zbt1_write_addr = vram_vga_addr
@@ -546,7 +545,7 @@ module zbt_6111_sample(beep, audio_reset_b,
    readPix pixFromZBT0(reset, clk, hcount, vcount, zbt0_two_pixels,
 		       vram_read_data, zbt1_write_addr);
 
-
+   /*
    // Store what I read from ZBT bank 0 to ZBT bank 1
   
    assign vram_addr1 = my_we1 ? zbt1_write_addr : vram_vga_addr;
